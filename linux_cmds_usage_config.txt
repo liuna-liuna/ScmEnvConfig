@@ -1,0 +1,23 @@
+
+# start smb service
+chkconfig --level 35 smb on
+chkconfig --list | grep -i smb
+service smb start
+
+# for NFS
+ping $<nfs_share_provider>
+showmount -e $<nfs_share_provider_ip>
+mount -t nfs $<nfs_share_provider_ip>:/ $<mount_point>
+
+# using .map file
+ex. /etc/$<mount_map_file_name>:
+$<mount_point>   -rw,hard,intr,proto=tcp,nolock,noatime $<nfs_share_provider>:$<mount_point_full_name> 
+
+
+
+# for smbget
+#
+# !! use full name: $<nfs_share_provider> !!
+#
+smbget -aU smb://$<nfs_share_provider>/$<mount_point>/$<file_name>
+sudo smbget -a smb://$<nfs_share_provider>/$<mount_point>/$<file_name> -o $<downloaded_path_for_file_name>
