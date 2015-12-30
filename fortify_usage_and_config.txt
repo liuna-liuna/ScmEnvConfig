@@ -77,3 +77,11 @@ fortifyclient token -gettoken AnalysisUploadToken -url https://$<fortify_server_
 Enter Password:
 Authorization Token: $<authorization_token>
 
+
+
+Windows development environment set-up
+
+1. double check SSL certificates
+  IE -> options -> Content -> Certificates
+  
+  
