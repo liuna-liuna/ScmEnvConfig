@@ -103,3 +103,22 @@ move dhcp.pgdev.sap.corp up in the order.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 Control Panel--language--Advanced settings--Change language bar hot keys--Press the CAPS LOCK key
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#
+# FAQ
+#
+1. No permission to copy a file from a file share to local disk
+phenomon:
+when copying \\cnpvgl000.pvgl.sap.corp\Restricted\BI_ALL\LeanDI\Softwares\BCompare-3.3.8.16340.exe to C:\, message box "File Access Denied" popped up.
+    You need permission to perform this action.
+although the account global\service.tip.cvom is already in local Administrators group.
+
+root-cause:
+could be the account have no copy right in the source directory, instead of the destination directory, although it could read the contents in the source directory.
+
+fix:
+copy the file from the source directory using another account to a temp location ex. \\cnpvgl000.pvgl.sap.corp\TEMP\, copy it to C:\.
+
+
+
