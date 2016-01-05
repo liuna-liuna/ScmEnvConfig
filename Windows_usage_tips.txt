@@ -68,8 +68,6 @@ move dhcp.pgdev.sap.corp up in the order.
 #
 # How to enable check point of Windows OS
 #
-		[to do]			2 Z820: enable checkpoint. 
-						Shg-cvom-infra backup data to \\cnpvgl000.pvgl.sap.corp\Restricted\BI_ALL\ST\SCM
 #
 # for windows server 2008 r2 enterprise
 #
@@ -103,6 +101,32 @@ move dhcp.pgdev.sap.corp up in the order.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 Control Panel--language--Advanced settings--Change language bar hot keys--Press the CAPS LOCK key
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#
+# how to disable auto login to win8
+#
+Steps:
+#	ref doc:
+#			http://winaero.com/blog/how-to-disable-automatic-logon-of-last-user-in-window-8/
+#			
+#
+1) netplwiz		# => Advanced, -> double check if "Require users to presss Ctrl+Alt+Delete" is checked.
+2) secpol.msc	# => Local Policies -> Security Options -> double check if "Interactive logon: Do not require Ctrl+Alt+Delete" is Disabled.
+3) regedit.exe	# => double check:
+							HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\UserSwitch : Enabled=1
+							HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon : DisableCAD=0
+
+4) %windir%\System32\gpedit.msc	# => User Configuration -> Windows Settings -> Scripts (Logon/Logoff) -> add for both Logon and Logoff
+# details:
+		How to prevent Windows 8 from logging in automatically to the last logged-in user
+		
+		This method is based on Group Policy and uses the Logon/Logoff Scripts feature of Group Policy. 
+		It is probably the best way to keep the Enabled value equal to 1 at the end of your Windows session.
+		
+		You must specify reg.exe as script name and 
+		'add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\UserSwitch /v Enabled /t REG_DWORD /d 1 /f' 
+		(without the quotes)  as script parameters:
+
 
 
 #
