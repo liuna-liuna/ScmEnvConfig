@@ -127,8 +127,18 @@ Steps:
 		'add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\UserSwitch /v Enabled /t REG_DWORD /d 1 /f' 
 		(without the quotes)  as script parameters:
 
-
-
+#
+#	How to turn on headset earphone
+#
+Steps:
+	go to system tray at the right bottom corner on a win8 client
+	right click -> Sound. (or select Sound from Sound/Microphone)
+	go to tab Playback
+	select Headset Earphone
+	save
+	
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # FAQ
 #
