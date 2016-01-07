@@ -21,3 +21,221 @@ $<mount_point>   -rw,hard,intr,proto=tcp,nolock,noatime $<nfs_share_provider>:$<
 #
 smbget -aU smb://$<nfs_share_provider>/$<mount_point>/$<file_name>
 sudo smbget -a smb://$<nfs_share_provider>/$<mount_point>/$<file_name> -o $<downloaded_path_for_file_name>
+
+#
+# for tomcat
+#
+
+##
+## deploy from tomcat
+##
+
+yum list | grep -i tomcat
+yum info tomcat6
+
+##
+## switch tomcat from port 8080 to 80.
+##
+Installing and configuring authbind
+# Authbind is installed the usual way, with the help of gcc and make. Please note: For this step to succeed, the gcc package is needed. It is already installed with the command sudo yum install gcc earlier, when tomcat was installed.
+#
+cd ~
+wget http://ftp.debian.org/debian/pool/main/a/authbind/authbind_2.1.1.tar.gz -O authbind.tar
+tar xf authbind.tar
+cd authbind
+make
+make install
+
+# Authbind is configured with some special files, for which we can assign our arbitrary permissions for the users we want to give access to. Since Tomcat is running with the Tomcat user, we'll tell authbind to allow connections to the HTTP port 80 and the HTTPS port 443 for this account:
+#
+touch /etc/authbind/byport/80
+chmod 500 /etc/authbind/byport/80
+chown tomcat /etc/authbind/byport/80
+touch /etc/authbind/byport/443
+chmod 500 /etc/authbind/byport/443
+chown tomcat /etc/authbind/byport/443
+
+# close httpd auto-start
+chkconfig httpd off
+
+
+##
+1. install a stable TomCAT 6.6
+	set proxy #TODO
+		# env | grep -i proxy
+			NO_PROXY=localhost,127.0.0.0/8
+			http_proxy=http://${proxy_server1}:8080/
+			FTP_PROXY=ftp://${proxy_server1}:8080/
+			ftp_proxy=ftp://${proxy_server1}:8080/
+			all_proxy=socks://${proxy_server1}:8080/
+			ALL_PROXY=socks://${proxy_server1}:8080/
+			https_proxy=https://${proxy_server1}:8080/
+			HTTPS_PROXY=https://${proxy_server1}:8080/
+			no_proxy=localhost,127.0.0.0/8
+			HTTP_PROXY=http://${proxy_server1}:8080/
+	yum update
+	deploy ${war1.war} in TomCAT
+		=> it works. http://localhost:8080/${war1}/
+	
+	How-to switch tomcat6 from default port 8080 to 80:
+		1) open viz2 through vSphere Client:  host: "${vsphere_server1}" account: i-number/$pwd -> ${machine_hier_path} -> right click, select Open Console.
+		2) update config files.
+			change 8080 in following line in /etc/tomcat6/server.xml <Service> section to 80:
+				<Service name="Catalina">
+					<Connector port="80" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+					...
+				</Service>	
+		3) restart tomcat service
+			service tomcat6 restart
+			
+			
+	How-to enable ${tomcat_server1} to support ROOT directory web browser:
+		1) open ${tomcat_server1} through vSphere Client:  host: "${vsphere_server1}" account: i-number/$pwd -> ${machine_hier_path} -> right click, select Open Console.
+		2) install authbind and config it.
+			# Authbind is installed the usual way, with the help of gcc and make. Please note: For this step to succeed, the gcc package is needed.
+			# It is already installed with the command sudo yum install gcc earlier, when tomcat was installed.
+			cd ~
+			wget http://ftp.debian.org/debian/pool/main/a/authbind/authbind_2.1.1.tar.gz -O authbind.tar
+			tar xf authbind.tar
+			cd authbind
+			make
+			make install
+			
+			# Authbind is configured with some special files, for which we can assign our arbitrary permissions for the users we want to give access to.
+			# Since Tomcat is running with the Tomcat user, we'll tell authbind to allow connections to the HTTP port 80 and the HTTPS port 443 for this account:
+			touch /etc/authbind/byport/80
+			chmod 500 /etc/authbind/byport/80
+			chown tomcat /etc/authbind/byport/80
+			touch /etc/authbind/byport/443
+			chmod 500 /etc/authbind/byport/443
+			chown tomcat /etc/authbind/byport/443
+			
+			# close httpd auto-start
+			chkconfig httpd off
+
+		3) update config files.
+			3.1) add following line into /etc/tomcat6/server.xml <Host> section:
+				<Host name="localhost"  appBase="webapps"
+					<Context path="" docBase="${war1}" debug="0" priviledged="true" reloadable="true"/>
+					...
+				</Host>
+			3.2) add following line into /etc/tomcat6/tomcat6.conf:
+				# use the IPv4 stack by default
+				CATALINA_OPTS="-Djava.net.preferIPv4Stack=true"
+		
+	How-to enable ${tomcat_server1} to support both 80 and 8080 ports, and support ROOT directory web browser:
+		1) follow step in "support ROOT directory web browser".
+		2) enable authbind to allow connections to the HTTP port 8080
+			touch /etc/authbind/byport/8080
+			chmod 500 /etc/authbind/byport/8080
+			chown tomcat /etc/authbind/byport/8080
+
+		3) update config files.
+			3.1) add an extra <Service> section into /etc/tomcat6/server.xml, similar to <Service name="Catalina"> section:
+			## !! pay attention to give new names to "Service name", "Engine name". !!
+					<Service name="Catalina2">
+						<Connector port="8080" protocol="HTTP/1.1" 
+								connectionTimeout="20000" 
+								redirectPort="8443" />
+					
+						<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
+					
+						<Engine name="Catalina2" defaultHost="localhost">
+					
+						<Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+								resourceName="UserDatabase"/>
+					
+						<Host name="localhost"  appBase="webapps"
+								unpackWARs="true" autoDeploy="true"
+								xmlValidation="false" xmlNamespaceAware="false">
+					
+							<!-- added to support ROOT directory website -->
+							<Context path="" docBase="${war1}" debug="0" priviledged="true" reloadable="true"/>
+					
+						</Host>
+						</Engine>
+					</Service>
+  
+  			3.2) set up settings for service "Catalina2", same as that of service "Catalina".
+				cp -Rp /etc/conf/Catalina /etc/conf/Catalina2
+				chown root:tomcat /etc/conf/Catalina2
+				chmod 777 /etc/conf/Catalina2
+				chown root:tomcat /etc/conf/Catalina2/localhost
+				chmod 777 /etc/conf/Catalina2/localhost
+				
+				Ref: http://linder.iteye.com/blog/782071
+
+			3.3) open port 8080 in Firewall.
+				goto System -> Administration -> Firewall -> other ports
+				add following two entries:
+					8080 tcp webcache
+					8443 tcp pcsync-https
+			
+			3.4) open port 8080 in Firewall.					
+		
+		
+		
+		
+=> it works.
+	http://${tomcat_server1}
+	http://${tomcat_server1}:80/${war1}/
+
+
+
+##
+##  debug tomcat issue
+##
+http://${tomcat_server1}:8080/${war1}/#68860
+http://${tomcat_server1}:8080/${war1}/
+
+
+1) add port 8080 in url  ( <= only workaround. )
+
+2) stop nginx  ( not work on shg-ci-web, because it's using nginx to do reverse proxying. )
+service nginx stop
+service --status-all | grep -i ssh
+double check ssh is running, httpd stopped.
+double check tomcat has id 0 in /etc/passwd, i.e., tomcat = root.
+    tomcat:x:0:91:Tomcat:/usr/share/tomcat5:/bin/bash
+
+double check firewall is disabled on shg-ci-web. proxy is set to tyo on shg-ci-web.
+
+    
+3) service tomcat5 restart
+
+
+#
+# How to enlarge the POST file size in tomcat to show it in browser
+#
+
+Why?
+from http://tomcat.apache.org/tomcat-5.5-doc/config/http.html :	
+maxPostSize	
+	The maximum size in bytes of the POST which will be handled by the container FORM URL parameter parsing. 
+	The limit can be disabled by setting this attribute to a value less than or equal to 0. 
+	If not specified, this attribute is set to 2097152 (2 megabytes).
+
+Steps:
+update ${TOMCAT_CONFIGURATION_PATH}/server.xml, ex. /etc/tomcat6/ to add parameter maxPostSize:
+ex. from 
+    <Connector port="8080" maxHttpHeaderSize="8192"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" redirectPort="8443" acceptCount="100"
+               connectionTimeout="20000" disableUploadTimeout="true" />
+
+to
+    <Connector port="8080" maxHttpHeaderSize="8192"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" redirectPort="8443" acceptCount="100"
+               connectionTimeout="20000" disableUploadTimeout="true"
+               maxPostSize="67589953"  />
+			   
+Restart Tomcat Service and done			   
+			   
+
+# ref doc
+#	http://tomcat.apache.org/tomcat-5.5-doc/config/http.html
+#	https://vicker313.wordpress.com/2010/08/12/increase-or-make-unlimited-maximum-post-size-in-tomcat/
+#	http://tomcat.apache.org/tomcat-5.5-doc/config/manager.html
+
+
