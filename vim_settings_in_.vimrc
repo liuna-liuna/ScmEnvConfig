@@ -25,10 +25,10 @@ to re-enable smartindent:
   # or
   set paste!
 
+3) highlight syntax
+  syntax on
 
-3) create alias
-alias ll='ls -l'
-
+# ref:  http://www.aichengxu.com/shell/5466441.htm
 # ref:  http://www.netingcn.com/tag/vim
 
 
