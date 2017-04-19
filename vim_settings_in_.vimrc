@@ -28,6 +28,16 @@ to re-enable smartindent:
 3) highlight syntax
   syntax on
 
+4) highlight in searching
+  " set matching parenthesis ()
+  set showmatch
+  
+  " highlight searching
+  set hlsearch
+  " highlight searching typing character by character
+  set incsearch
+
+
 # ref:  http://www.aichengxu.com/shell/5466441.htm
 # ref:  http://www.netingcn.com/tag/vim
 
