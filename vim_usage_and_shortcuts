@@ -1,0 +1,15 @@
+#
+# vim usage and shortcuts
+#
+1) redo, undo
+    redo: Ctrl + r
+    undo: u
+    
+    <=> undo is a tree structure:
+    :undolist
+    :undo 2
+    :earlier 10s
+    :earlier 10h
+
+# ref:    http://www.cnblogs.com/wangkangluo1/archive/2012/04/12/2444952.html
+
