@@ -23,6 +23,33 @@ smbget -aU smb://$<nfs_share_provider>/$<mount_point>/$<file_name>
 sudo smbget -a smb://$<nfs_share_provider>/$<mount_point>/$<file_name> -o $<downloaded_path_for_file_name>
 
 #
+# get content of a webpage
+#
+	# curl is for Linux, can be implemented in cygwin ex. C:\Program Files (x86)\Git\bin\curl.exe
+	# wget is for Linux
+curl http://localhost:8080/simple-webapp/simple
+curl -sf -D /dev/stderr http://shg-cvom-infra.pgdev.sap.corp:8080/ 2>&1 > /dev/null
+
+# curl --help
+ -D, --dump-header FILE  Write the received headers to FILE
+     --egd-file FILE  EGD socket path for random data (SSL)
+     --engine ENGINE  Crypto engine (use "--engine list" for list) (SSL)
+     --expect100-timeout SECONDS How long to wait for 100-continue (H)
+ -f, --fail          Fail silently (no output at all) on HTTP errors (H)
+     --fail-early    Fail on first transfer error, do not continue
+     --false-start   Enable TLS False Start.
+ -L, --location      Follow redirects (H)
+     --location-trusted  Like '--location', and send auth to other hosts (H)
+     --login-options OPTIONS  Server login options (IMAP, POP3, SMTP)
+ -O, --remote-name   Write output to a file named as the remote file
+     --remote-name-all  Use the remote file name for all URLs
+ -o, --output FILE   Write to FILE instead of stdout
+ -S, --show-error    Show error. With -s, make curl show errors when they occur
+ -s, --silent        Silent mode (don't output anything)
+	 
+	 
+	 
+#
 # for tomcat
 #
 
