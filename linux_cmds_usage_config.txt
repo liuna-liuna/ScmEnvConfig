@@ -46,6 +46,10 @@ curl -sf -D /dev/stderr http://shg-cvom-infra.pgdev.sap.corp:8080/ 2>&1 > /dev/n
  -o, --output FILE   Write to FILE instead of stdout
  -S, --show-error    Show error. With -s, make curl show errors when they occur
  -s, --silent        Silent mode (don't output anything)
+ -H, --header LINE   Pass custom header LINE to server (H)
+ -i, --include       Include protocol headers in the output (H/F)
+ -d, --data DATA     HTTP POST data (H)
+ -X, --request COMMAND  Specify request command to use
 	 
 	 
 	 
