@@ -37,6 +37,13 @@ to re-enable smartindent:
   " highlight searching typing character by character
   set incsearch
 
+4) enable auto reload file
+" enable auto reload file
+set autoread
+
+
+# ref:  http://www.blogdaren.com/m/?post=1479
+
 
 # ref:  http://www.aichengxu.com/shell/5466441.htm
 # ref:  http://www.netingcn.com/tag/vim
